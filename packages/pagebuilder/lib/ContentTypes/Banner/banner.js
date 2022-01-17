@@ -276,8 +276,8 @@ const Banner = props => {
 
     const history = useHistory();
 
-    const clickHandler = e => {
-        handleHtmlContentClick(history, e);
+    const clickHandler = event => {
+        handleHtmlContentClick(history, event);
     };
 
     let BannerFragment = (

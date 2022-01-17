@@ -13,6 +13,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // const NormalModuleOverridePlugin = require('./src/plugins/normalModuleOverrideWebpackPlugin');
 // const componentOverrideMapping = require('./componentOverrideMapping');
 
+const { promisify } = require('util');
 
 const {
     getMediaURL,
@@ -74,6 +75,7 @@ module.exports = async env => {
     const mediaUrl = await getMediaURL();
     const storeConfigData = await getStoreConfigData();
     const { availableStores } = await getAvailableStoresConfigData();
+    const writeFile = promisify(fs.writeFile);
 
     /**
      * Loop the available stores when there is provided STORE_VIEW_CODE
@@ -104,9 +106,11 @@ module.exports = async env => {
         process.env.npm_lifecycle_event &&
         process.env.npm_lifecycle_event.includes('watch')
     ) {
-        htmlWebpackConfig.templateContent = await getCleanTemplate(
-            './template.html'
-        );
+        const devTemplate = await getCleanTemplate('./template.html');
+
+        // Generate new gitignored html file based on the cleaned template
+        await writeFile('template.generated.html', devTemplate);
+        htmlWebpackConfig.template = './template.generated.html';
     } else {
         htmlWebpackConfig.template = './template.html';
     }

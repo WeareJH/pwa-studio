@@ -117,9 +117,9 @@ export const useCategory = props => {
             newFilters[key] = getFilterInput(values, filterTypeMap.get(key));
         });
 
-        // Use the category id for the current category page regardless of the
+        // Use the category uid for the current category page regardless of the
         // applied filters. Follow-up in PWA-404.
-        newFilters['category_id'] = { eq: String(id) };
+        newFilters['category_id'] = { eq: id };
 		return newFilters;
     }, [filterTypeMap, pageSize, id, search]);
 
