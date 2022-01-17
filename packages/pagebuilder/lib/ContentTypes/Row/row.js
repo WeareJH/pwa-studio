@@ -140,55 +140,58 @@ const Row = props => {
 
     // Initiate jarallax for Parallax and background video
     useEffect(() => {
-        let parallaxElement;
-        let jarallax;
-        let jarallaxVideo;
-
-        if (enableParallax && bgImageStyle && backgroundType !== 'video') {
-            ({ jarallax } = require('jarallax'));
-            parallaxElement = backgroundElement.current;
-            jarallax(parallaxElement, {
-                speed: parallaxSpeed,
-                imgSize: backgroundSize,
-                imgPosition: backgroundPosition,
-                imgRepeat: backgroundRepeat
-            });
-        }
-
-        if (backgroundType === 'video') {
-            ({ jarallax } = require('jarallax'));
-            ({ jarallaxVideo } = require('jarallax'));
-            jarallaxVideo();
-            parallaxElement = backgroundElement.current;
-            jarallax(parallaxElement, {
-                speed: enableParallax ? parallaxSpeed : 1,
-                imgSrc: videoFallbackSrc
-                    ? resourceUrl(videoFallbackSrc, {
-                          type: 'image-wysiwyg',
-                          quality: 85
-                      })
-                    : null,
-                videoSrc,
-                videoLoop,
-                videoPlayOnlyVisible,
-                videoLazyLoading
-            });
-
-            parallaxElement.jarallax.video &&
-                parallaxElement.jarallax.video.on('started', () => {
-                    const self = parallaxElement.jarallax;
-
-                    // show video
-                    if (self.$video) {
-                        self.$video.style.visibility = 'visible';
-                    }
+        if(!globalThis.isSSR) {
+            let parallaxElement;
+            let jarallax;
+            let jarallaxVideo;
+    
+            if (enableParallax && bgImageStyle && backgroundType !== 'video') {
+                ({ jarallax } = require('jarallax'));
+                parallaxElement = backgroundElement.current;
+                jarallax(parallaxElement, {
+                    speed: parallaxSpeed,
+                    imgSize: backgroundSize,
+                    imgPosition: backgroundPosition,
+                    imgRepeat: backgroundRepeat
                 });
+            }
+    
+            if (backgroundType === 'video') {
+                ({ jarallax } = require('jarallax'));
+                ({ jarallaxVideo } = require('jarallax'));
+                jarallaxVideo();
+                parallaxElement = backgroundElement.current;
+                jarallax(parallaxElement, {
+                    speed: enableParallax ? parallaxSpeed : 1,
+                    imgSrc: videoFallbackSrc
+                        ? resourceUrl(videoFallbackSrc, {
+                              type: 'image-wysiwyg',
+                              quality: 85
+                          })
+                        : null,
+                    videoSrc,
+                    videoLoop,
+                    videoPlayOnlyVisible,
+                    videoLazyLoading
+                });
+    
+                parallaxElement.jarallax.video &&
+                    parallaxElement.jarallax.video.on('started', () => {
+                        const self = parallaxElement.jarallax;
+    
+                        // show video
+                        if (self.$video) {
+                            self.$video.style.visibility = 'visible';
+                        }
+                    });
+            }
         }
 
         return () => {
             if (
-                (enableParallax && parallaxElement && bgImageStyle) ||
-                (parallaxElement && backgroundType === 'video')
+                !globalThis.isSSr &&
+                ((enableParallax && parallaxElement && bgImageStyle) ||
+                (parallaxElement && backgroundType === 'video'))
             ) {
                 jarallax(parallaxElement, 'destroy');
             }

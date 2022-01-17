@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'informed';
 import { shape, func, string, bool, instanceOf } from 'prop-types';
@@ -9,6 +9,7 @@ import CheckoutError from '@magento/peregrine/lib/talons/CheckoutPage/CheckoutEr
 import { useStyle } from '../../../classify';
 import defaultClasses from './paymentInformation.module.css';
 import LoadingIndicator from '../../LoadingIndicator';
+import Suspense from '../../SuspenseFallback';
 
 const PaymentMethods = React.lazy(() => import('./paymentMethods'));
 const EditModal = React.lazy(() => import('./editModal'));

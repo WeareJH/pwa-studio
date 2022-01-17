@@ -2,11 +2,11 @@ import { useQuery } from '@apollo/client';
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDropdown } from '@magento/peregrine/lib/hooks/useDropdown';
-import { BrowserPersistence } from '@magento/peregrine/lib/util';
+// import { BrowserPersistence } from '@magento/peregrine/lib/util';
 import mergeOperations from '../../util/shallowMerge';
 import DEFAULT_OPERATIONS from './storeSwitcher.gql';
 
-const storage = new BrowserPersistence();
+// const storage = new BrowserPersistence();
 
 const mapAvailableOptions = (config, stores) => {
     const { code: configCode } = config;
@@ -191,12 +191,12 @@ export const useStoreSwitcher = (props = {}) => {
             const pathName = getPathname(storeCode);
             const params = globalThis.location.search || '';
 
-            storage.setItem('store_view_code', storeCode);
-            storage.setItem(
+            globalThis.storage.setItem('store_view_code', storeCode);
+            globalThis.storage.setItem(
                 'store_view_currency',
                 availableStores.get(storeCode).currency
             );
-            storage.setItem(
+            globalThis.storage.setItem(
                 'store_view_secure_base_media_url',
                 availableStores.get(storeCode).secure_base_media_url
             );

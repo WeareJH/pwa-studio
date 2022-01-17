@@ -3,7 +3,7 @@ import { arrayOf, bool, number, oneOf, shape, string } from 'prop-types';
 import SlickSlider from 'react-slick';
 import defaultClasses from './slider.module.css';
 import { useStyle } from '@magento/venia-ui/lib/classify';
-import { jarallax } from 'jarallax';
+// import { jarallax } from 'jarallax';
 
 /**
  * Page Builder Slider component.
@@ -61,16 +61,16 @@ const Slider = props => {
         paddingBottom,
         paddingLeft
     };
-    const jarallaxInstances = {};
+    // const jarallaxInstances = {};
     const sliderSettings = {
         dots: showDots,
         arrows: showArrows,
         lazyLoad: 'ondemand',
-        afterChange: () => {
-            Object.keys(jarallaxInstances).map(key => {
-                jarallax(jarallaxInstances[key].element, 'onScroll');
-            });
-        },
+        // afterChange: () => {
+        //     Object.keys(jarallaxInstances).map(key => {
+        //         jarallax(jarallaxInstances[key].element, 'onScroll');
+        //     });
+        // },
         infinite,
         autoplay,
         autoplaySpeed,
@@ -86,12 +86,12 @@ const Slider = props => {
                 wrapper: classes.bannerWrapper,
                 posterOverlay: classes.bannerPosterOverlay
             };
-            child.props.data.getParallax = (element, options) => {
-                jarallaxInstances[index] = {
-                    element,
-                    options
-                };
-            };
+            // child.props.data.getParallax = (element, options) => {
+            //     jarallaxInstances[index] = {
+            //         element,
+            //         options
+            //     };
+            // };
         }
         return child;
     });

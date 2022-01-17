@@ -1,6 +1,7 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { getContentTypeConfig, setContentTypeConfig } from './config';
 import customContentTypes from './ContentTypes/customContentTypes';
+import Suspense from '@magento/venia-ui/lib/components/Suspense';
 
 /**
  *  add custom content types

@@ -28,7 +28,8 @@ const MegaMenu = props => {
 
     const [mainNavWidth, setMainNavWidth] = useState(0);
     const shouldRenderItems = useIsInViewport({
-        elementRef: mainNavRef
+        elementRef: mainNavRef,
+        ignoreSSR: true,
     });
 
     useEffect(() => {

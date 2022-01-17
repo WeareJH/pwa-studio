@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { /*useLazyQuery,*/ useQuery } from '@apollo/client';
 
 import mergeOperations from '../../../util/shallowMerge';
 import { useAppContext } from '../../../context/app';
@@ -21,7 +21,7 @@ import DEFAULT_OPERATIONS from './category.gql';
  * @kind function
  *
  * @param {object}      props
- * @param {number}      props.id - Category Id.
+ * @param {String}      props.id - Category uid.
  * @param {GraphQLAST}  props.operations.getCategoryQuery - Fetches category using a server query
  * @param {GraphQLAST}  props.operations.getFilterInputsQuery - Fetches "allowed" filters using a server query
  * @param {GraphQLAST}  props.queries.getStoreConfig - Fetches store configuration using a server query
@@ -73,24 +73,10 @@ export const useCategory = props => {
         }
     ] = useAppContext();
 
-    const [runQuery, queryResponse] = useLazyQuery(getCategoryQuery, {
-        fetchPolicy: 'cache-and-network',
-        nextFetchPolicy: 'cache-first'
-    });
-    const {
-        called: categoryCalled,
-        loading: categoryLoading,
-        error,
-        data
-    } = queryResponse;
-    const { search } = useLocation();
-
-    const isBackgroundLoading = !!data && categoryLoading;
-
-    // Update the page indicator if the GraphQL query is in flight.
-    useEffect(() => {
-        setPageLoading(isBackgroundLoading);
-    }, [isBackgroundLoading, setPageLoading]);
+    // const [runQuery, queryResponse] = useLazyQuery(getCategoryQuery, {
+    //     fetchPolicy: 'cache-and-network',
+    //     nextFetchPolicy: 'cache-first'
+    // });
 
     // Keep track of the search terms so we can tell when they change.
     const previousSearch = useRef(search);
@@ -118,11 +104,9 @@ export const useCategory = props => {
         return typeMap;
     }, [introspectionData]);
 
-    // Run the category query immediately and whenever its variable values change.
-    useEffect(() => {
-        // Wait until we have the type map to fetch product data.
+	const filters = useMemo(() => {
         if (!filterTypeMap.size || !pageSize) {
-            return;
+            return false;
         }
 
         const filters = getFiltersFromSearch(search);
@@ -136,25 +120,74 @@ export const useCategory = props => {
         // Use the category id for the current category page regardless of the
         // applied filters. Follow-up in PWA-404.
         newFilters['category_id'] = { eq: String(id) };
+		return newFilters;
+    }, [filterTypeMap, pageSize, id, search]);
 
-        runQuery({
-            variables: {
-                currentPage: Number(currentPage),
-                id: String(id),
-                filters: newFilters,
-                pageSize: Number(pageSize),
-                sort: { [currentSort.sortAttribute]: currentSort.sortDirection }
-            }
-        });
-    }, [
-        currentPage,
-        currentSort,
-        filterTypeMap,
-        id,
-        pageSize,
-        runQuery,
-        search
-    ]);
+	const queryResponse = useQuery(getCategoryQuery, {
+        fetchPolicy: 'cache-and-network',
+        nextFetchPolicy: 'cache-first',
+		variables: {
+			currentPage: Number(currentPage),
+			id: id,
+			filters: filters,
+			pageSize: Number(pageSize),
+			sort: { [currentSort.sortAttribute]: currentSort.sortDirection }
+		},
+		skip: (!id || !filters || !pageSize),
+	});
+
+    const {
+        called: categoryCalled,
+        loading: categoryLoading,
+        error,
+        data
+    } = queryResponse;
+    const { search } = useLocation();
+
+    const isBackgroundLoading = !!data && categoryLoading;
+
+    // Update the page indicator if the GraphQL query is in flight.
+    useEffect(() => {
+        setPageLoading(isBackgroundLoading);
+    }, [isBackgroundLoading, setPageLoading]);
+
+    // Run the category query immediately and whenever its variable values change.
+    // useEffect(() => {
+    //     // Wait until we have the type map to fetch product data.
+    //     if (!filterTypeMap.size || !pageSize) {
+    //         return;
+    //     }
+
+    //     const filters = getFiltersFromSearch(search);
+
+    //     // Construct the filter arg object.
+    //     const newFilters = {};
+    //     filters.forEach((values, key) => {
+    //         newFilters[key] = getFilterInput(values, filterTypeMap.get(key));
+    //     });
+
+    //     // Use the category uid for the current category page regardless of the
+    //     // applied filters. Follow-up in PWA-404.
+    //     newFilters['category_uid'] = { eq: id };
+
+    //     runQuery({
+    //         variables: {
+    //             currentPage: Number(currentPage),
+    //             id: id,
+    //             filters: newFilters,
+    //             pageSize: Number(pageSize),
+    //             sort: { [currentSort.sortAttribute]: currentSort.sortDirection }
+    //         }
+    //     });
+    // }, [
+    //     currentPage,
+    //     currentSort,
+    //     filterTypeMap,
+    //     id,
+    //     pageSize,
+    //     runQuery,
+    //     search
+    // ]);
 
     const totalPagesFromData = data
         ? data.products.page_info.total_pages

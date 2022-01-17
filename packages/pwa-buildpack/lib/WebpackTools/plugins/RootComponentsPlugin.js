@@ -192,6 +192,7 @@ class RootComponentsPlugin {
 
         // create importer function to expose to other modules
         const importer = `function importRootComponent(type, variant) {
+            // console.trace('gk', type, variant);
             const importerKey = getKey(type, variant);
             return rootComponentsMap[importerKey]()
                 .then(esModuleInterop);

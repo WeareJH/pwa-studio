@@ -234,6 +234,34 @@
                     "default": false
                 }
             ]
+        },
+        {
+            "name": "Persistence settings",
+            "variables": [
+                {
+                    "name": "PERSISTENCE_KEY",
+                    "type": "str",
+                    "desc": "Specify the default persistence key for storage. Defaults to M2_VENIA_PERSISTENCE if not provided.",
+                    "default": "M2_VENIA_PERSISTENCE"
+                },
+                {
+                    "name": "USE_COOKIES",
+                    "type": "bool",
+                    "desc": "Specify if client application uses cookies instead of localStorage as default persistence provider. Defaults to false if not provided.",
+                    "default": false
+                }
+            ]
+        },
+        {
+            "name": "Server Side Rendering",
+            "variables": [
+                {
+                    "name": "SUPPORT_SSR",
+                    "type": "bool",
+                    "desc": "Specify if application is based on SSR. Defaults to false if not provided.",
+                    "default": false
+                }
+            ]
         }
     ],
     "changes": []

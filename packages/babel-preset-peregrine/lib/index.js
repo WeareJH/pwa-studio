@@ -8,6 +8,7 @@ const plugins = [
      * https://babeljs.io/docs/en/next/babel-plugin-syntax-jsx.html
      * https://babeljs.io/docs/en/babel-plugin-transform-react-jsx
      * https://www.npmjs.com/package/babel-plugin-graphql-tag
+     * https://www.npmjs.com/package/@loadable/babel-plugin
      */
     ['@babel/plugin-proposal-class-properties'],
     ['@babel/plugin-proposal-object-rest-spread'],
@@ -15,7 +16,8 @@ const plugins = [
     ['@babel/plugin-syntax-dynamic-import'],
     ['@babel/plugin-syntax-jsx'],
     ['@babel/plugin-transform-react-jsx'],
-    ['babel-plugin-graphql-tag']
+    ['babel-plugin-graphql-tag'],
+    ['@loadable/babel-plugin']
 ];
 
 const config = (api, opts = {}) => {
@@ -87,6 +89,7 @@ const config = (api, opts = {}) => {
             ]
         }
     };
+
     return envConfigs[api.env() || 'development'];
 };
 

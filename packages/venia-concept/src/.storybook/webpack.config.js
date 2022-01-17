@@ -51,7 +51,7 @@ module.exports = async ({ config: storybookBaseConfig, mode }) => {
             DEFAULT_LOCALE: JSON.stringify(global.LOCALE),
             DEFAULT_COUNTRY_CODE: JSON.stringify(
                 process.env.DEFAULT_COUNTRY_CODE || 'US'
-            )
+            ),
         }),
         new EnvironmentPlugin(projectConfig.env),
         new ReactRefreshWebpackPlugin()

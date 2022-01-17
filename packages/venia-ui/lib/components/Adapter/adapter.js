@@ -18,7 +18,7 @@ const Adapter = props => {
     } = talonProps;
 
     // TODO: Replace with app skeleton. See PWA-547.
-    if (!initialized) {
+    if (!initialized && !SUPPORT_SSR) {
         return null;
     }
 

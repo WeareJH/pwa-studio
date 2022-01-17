@@ -13,15 +13,16 @@ import MutationQueueLink from '@adobe/apollo-link-mutation-queue';
 import attachClient from '@magento/peregrine/lib/Apollo/attachClientToStore';
 import { clearCartDataFromCache } from '@magento/peregrine/lib/Apollo/clearCartDataFromCache';
 import { clearCustomerDataFromCache } from '@magento/peregrine/lib/Apollo/clearCustomerDataFromCache';
-import { CACHE_PERSIST_PREFIX } from '@magento/peregrine/lib/Apollo/constants';
+import { CACHE_PERSIST_PREFIX, GQL_STATE_ID } from '@magento/peregrine/lib/Apollo/constants';
 import typePolicies from '@magento/peregrine/lib/Apollo/policies';
 import MagentoGQLCacheLink from '@magento/peregrine/lib/Apollo/magentoGqlCacheLink';
-import { BrowserPersistence } from '@magento/peregrine/lib/util';
+// import { BrowserPersistence } from '@magento/peregrine/lib/util';
 import shrinkQuery from '@magento/peregrine/lib/util/shrinkQuery';
+import readJson from '@magento/peregrine/lib/util/readJson';
 
 export const useAdapter = props => {
     const { origin, store, styles } = props;
-    const storeCode = storage.getItem('store_view_code') || STORE_VIEW_CODE;
+    const storeCode = globalThis.storage.getItem('store_view_code') || STORE_VIEW_CODE;
     const basename = urlHasStoreCode ? `/${storeCode}` : null;
     const [initialized, setInitialized] = useState(false);
 
@@ -33,7 +34,7 @@ export const useAdapter = props => {
         () =>
             setContext((_, { headers }) => {
                 // get the authentication token from local storage if it exists.
-                const token = storage.getItem('signin_token');
+                const token = globalThis.storage.getItem('signin_token');
 
                 // return the headers to the context so httpLink can read them
                 return {
@@ -146,9 +147,9 @@ export const useAdapter = props => {
         () =>
             setContext((_, { headers }) => {
                 const storeCurrency =
-                    storage.getItem('store_view_currency') || null;
+                    globalThis.storage.getItem('store_view_currency') || null;
                 const storeCode =
-                    storage.getItem('store_view_code') || STORE_VIEW_CODE;
+                    globalThis.storage.getItem('store_view_code') || STORE_VIEW_CODE;
 
                 // return the headers to the context so httpLink can read them
                 return {
@@ -194,7 +195,8 @@ export const useAdapter = props => {
         return new ApolloClient({
             cache,
             link,
-            ssrMode: isServer
+            ssrMode: isServer,
+            ssrForceFetchDelay: 5000,
         });
     }, []);
 
@@ -211,7 +213,7 @@ export const useAdapter = props => {
 
     const clearCacheData = useCallback(
         async (client, cacheType) => {
-            const storeCode = storage.getItem('store_view_code') || 'default';
+            const storeCode = globalThis.storage.getItem('store_view_code') || 'default';
 
             // Clear current store
             if (cacheType === 'cart') {
@@ -243,9 +245,9 @@ export const useAdapter = props => {
                             apolloLink
                         );
 
-                        storeClient.persistor = isServer
-                            ? null
-                            : createCachePersistor(store.code, storeCache);
+                        // storeClient.persistor = isServer
+                        //     ? null
+                        //     : createCachePersistor(store.code, storeCache);
 
                         // Clear other store
                         if (cacheType === 'cart') {
@@ -261,12 +263,13 @@ export const useAdapter = props => {
     );
 
     const apolloClient = useMemo(() => {
-        const storeCode = storage.getItem('store_view_code') || 'default';
+        // const storeCode = globalThis.storage.getItem('store_view_code') || 'default';
+        const preInstantiatedCache = createPreInstantiatedCache();
         const client = createApolloClient(preInstantiatedCache, apolloLink);
-        const persistor = isServer
-            ? null
-            : createCachePersistor(storeCode, preInstantiatedCache);
-
+        // const persistor = isServer
+        //     ? null
+        //     : createCachePersistor(storeCode, preInstantiatedCache);
+        const persistor = null;
         client.apiBase = apiBase;
         client.persistor = persistor;
         client.clearCacheData = clearCacheData;
@@ -300,7 +303,7 @@ export const useAdapter = props => {
         // immediately invoke this async function
         (async () => {
             // restore persisted data to the Apollo cache
-            await apolloClient.persistor.restore();
+            // await apolloClient.persistor.restore();
 
             // attach the Apollo client to the Redux store
             await attachClient(apolloClient);
@@ -321,7 +324,6 @@ export const useAdapter = props => {
 };
 
 const isServer = !globalThis.document;
-const storage = new BrowserPersistence();
 const urlHasStoreCode = process.env.USE_STORE_CODE_IN_URL === 'true';
 
 /**
@@ -329,11 +331,16 @@ const urlHasStoreCode = process.env.USE_STORE_CODE_IN_URL === 'true';
  * this module is executed, since it doesn't depend on any component props.
  * The tradeoff is that we may be creating an instance we don't end up needing.
  */
-const preInstantiatedCache = new InMemoryCache({
-    // POSSIBLE_TYPES is injected into the bundle by webpack at build time.
-    possibleTypes: POSSIBLE_TYPES,
-    typePolicies
-});
+const createPreInstantiatedCache = () => {
+    const preInstantiatedCache = new InMemoryCache({
+        // POSSIBLE_TYPES is injected into the bundle by webpack at build time.
+        possibleTypes: POSSIBLE_TYPES,
+        typePolicies
+    });
+
+    const apolloState = !isServer ? readJson(GQL_STATE_ID) : false;
+    return (apolloState ? preInstantiatedCache.restore(apolloState) : preInstantiatedCache);
+}
 
 /**
  * Intercept and shrink URLs from GET queries.

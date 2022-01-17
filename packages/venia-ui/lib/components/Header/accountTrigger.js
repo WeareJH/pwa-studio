@@ -1,4 +1,4 @@
-import React, { Fragment, Suspense } from 'react';
+import React, { Fragment } from 'react';
 import { useIntl } from 'react-intl';
 import { shape, string } from 'prop-types';
 
@@ -6,6 +6,7 @@ import { useAccountTrigger } from '@magento/peregrine/lib/talons/Header/useAccou
 import { useStyle } from '@magento/venia-ui/lib/classify';
 
 import AccountChip from '../AccountChip';
+import Suspense from '../SuspenseFallback'
 
 import defaultClasses from './accountTrigger.module.css';
 

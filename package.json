@@ -82,6 +82,7 @@
     "jest-junit": "~10.0.0",
     "jest-transform-graphql": "~2.1.0",
     "lodash.debounce": "~4.0.8",
+    "postcss": "~8.3.6",
     "prettier": "~1.16.4",
     "rimraf": "~2.6.3",
     "tailwindcss": "~2.2.7"

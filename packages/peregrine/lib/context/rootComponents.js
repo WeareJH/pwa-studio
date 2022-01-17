@@ -4,7 +4,8 @@ const RootComponentsContext = createContext();
 
 const RootComponentsProvider = props => {
     const { children } = props;
-    const state = useState(new Map());
+    const state = useState(globalThis?.initialRootComponents ? globalThis.initialRootComponents : new Map());
+    // const state = useState(new Map());
 
     return (
         <RootComponentsContext.Provider value={state}>

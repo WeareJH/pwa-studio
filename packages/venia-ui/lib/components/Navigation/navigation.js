@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { shape, string } from 'prop-types';
 import { useNavigation } from '@magento/peregrine/lib/talons/Navigation/useNavigation';
 
@@ -8,6 +8,7 @@ import CategoryTree from '../CategoryTree';
 import CurrencySwitcher from '../Header/currencySwitcher';
 import StoreSwitcher from '../Header/storeSwitcher';
 import LoadingIndicator from '../LoadingIndicator';
+import Suspense from '../SuspenseFallback';
 import NavHeader from './navHeader';
 import defaultClasses from './navigation.module.css';
 

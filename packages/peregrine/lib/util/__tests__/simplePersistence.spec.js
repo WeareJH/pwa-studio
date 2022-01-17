@@ -1,7 +1,7 @@
 import BrowserPersistence from '../simplePersistence';
 
 const NAME = 'UnitTest';
-const KEY = `M2_VENIA_BROWSER_PERSISTENCE__${NAME}`;
+const KEY = `${PERSISTENCE_KEY}__${NAME}`;
 const MOCK_VALUE = { unit: 'test' };
 
 const mockGetItem = jest.fn();

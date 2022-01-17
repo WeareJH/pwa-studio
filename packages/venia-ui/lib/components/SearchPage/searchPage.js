@@ -1,13 +1,14 @@
-import React, { Fragment, Suspense, useMemo } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { shape, string } from 'prop-types';
 
 import { useSearchPage } from '@magento/peregrine/lib/talons/SearchPage/useSearchPage';
 
 import { useStyle } from '../../classify';
-import Pagination from '../../components/Pagination';
+import Pagination from '../Pagination';
 import Gallery, { GalleryShimmer } from '../Gallery';
 import ProductSort, { ProductSortShimmer } from '../ProductSort';
+import Suspense from '../SuspenseFallback';
 import defaultClasses from './searchPage.module.css';
 import SortedByContainer, {
     SortedByContainerShimmer

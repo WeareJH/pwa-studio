@@ -1,11 +1,11 @@
 import { Magento2 } from '../../../RestApi';
-import BrowserPersistence from '../../../util/simplePersistence';
+// import BrowserPersistence from '../../../util/simplePersistence';
 import { closeDrawer } from '../app';
 import { createCart, removeCart } from '../cart';
 import actions from './actions';
 
 const { request } = Magento2;
-const storage = new BrowserPersistence();
+// const storage = new BrowserPersistence();
 
 export const beginCheckout = () =>
     async function thunk(dispatch) {
@@ -351,63 +351,63 @@ export const formatAddress = (address = {}, countries = []) => {
 };
 
 async function clearAvailableShippingMethods() {
-    return storage.removeItem('availableShippingMethods');
+    return globalThis.storage.removeItem('availableShippingMethods');
 }
 
 async function retrieveAvailableShippingMethods() {
-    return storage.getItem('availableShippingMethods');
+    return globalThis.storage.getItem('availableShippingMethods');
 }
 
 async function saveAvailableShippingMethods(methods) {
-    return storage.setItem('availableShippingMethods', methods);
+    return globalThis.storage.setItem('availableShippingMethods', methods);
 }
 
 async function clearBillingAddress() {
-    return storage.removeItem('billing_address');
+    return globalThis.storage.removeItem('billing_address');
 }
 
 async function retrieveBillingAddress() {
-    return storage.getItem('billing_address');
+    return globalThis.storage.getItem('billing_address');
 }
 
 async function saveBillingAddress(address) {
-    return storage.setItem('billing_address', address);
+    return globalThis.storage.setItem('billing_address', address);
 }
 
 async function clearPaymentMethod() {
-    return storage.removeItem('paymentMethod');
+    return globalThis.storage.removeItem('paymentMethod');
 }
 
 async function retrievePaymentMethod() {
-    return storage.getItem('paymentMethod');
+    return globalThis.storage.getItem('paymentMethod');
 }
 
 async function savePaymentMethod(method) {
-    return storage.setItem('paymentMethod', method);
+    return globalThis.storage.setItem('paymentMethod', method);
 }
 
 async function clearShippingAddress() {
-    return storage.removeItem('shipping_address');
+    return globalThis.storage.removeItem('shipping_address');
 }
 
 async function retrieveShippingAddress() {
-    return storage.getItem('shipping_address');
+    return globalThis.storage.getItem('shipping_address');
 }
 
 async function saveShippingAddress(address) {
-    return storage.setItem('shipping_address', address);
+    return globalThis.storage.setItem('shipping_address', address);
 }
 
 async function clearShippingMethod() {
-    return storage.removeItem('shippingMethod');
+    return globalThis.storage.removeItem('shippingMethod');
 }
 
 async function retrieveShippingMethod() {
-    return storage.getItem('shippingMethod');
+    return globalThis.storage.getItem('shippingMethod');
 }
 
 async function saveShippingMethod(method) {
-    return storage.setItem('shippingMethod', method);
+    return globalThis.storage.setItem('shippingMethod', method);
 }
 
 export const clearCheckoutDataFromStorage = async () => {

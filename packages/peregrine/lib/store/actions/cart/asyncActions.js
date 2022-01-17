@@ -2,7 +2,7 @@ import BrowserPersistence from '../../../util/simplePersistence';
 import { signOut } from '../user';
 import actions from './actions';
 
-const storage = new BrowserPersistence();
+// const storage = new BrowserPersistence();
 
 export const createCart = payload =>
     async function thunk(dispatch, getState) {
@@ -400,23 +400,23 @@ export const removeCart = () =>
 
 /* helpers */
 export async function retrieveCartId() {
-    return storage.getItem('cartId');
+    return globalThis.storage.getItem('cartId');
 }
 
 export async function saveCartId(id) {
-    return storage.setItem('cartId', id);
+    return globalThis.storage.setItem('cartId', id);
 }
 
 export async function clearCartId() {
-    return storage.removeItem('cartId');
+    return globalThis.storage.removeItem('cartId');
 }
 
 async function retrieveImageCache() {
-    return storage.getItem('imagesBySku') || {};
+    return globalThis.storage.getItem('imagesBySku') || {};
 }
 
 async function saveImageCache(cache) {
-    return storage.setItem('imagesBySku', cache);
+    return globalThis.storage.setItem('imagesBySku', cache);
 }
 
 export async function writeImageToCache(item = {}) {

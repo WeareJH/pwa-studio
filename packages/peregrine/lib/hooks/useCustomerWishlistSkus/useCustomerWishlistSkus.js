@@ -20,8 +20,10 @@ export const useCustomerWishlistSkus = (props = {}) => {
 
     const {
         client,
-        data: { customerWishlistProducts }
+        data: customerWishlistProductsData
     } = useQuery(operations.getProductsInWishlistsQuery);
+
+    const customerWishlistProducts = customerWishlistProductsData ? customerWishlistProductsData.customerWishListProducts : {};
 
     useQuery(operations.getWishlistItemsQuery, {
         fetchPolicy: 'cache-and-network',

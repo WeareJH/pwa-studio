@@ -3,13 +3,13 @@ import { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDropdown } from '@magento/peregrine/lib/hooks/useDropdown';
 import { useTypePolicies } from '@magento/peregrine';
-import { BrowserPersistence } from '@magento/peregrine/lib/util';
+// import { BrowserPersistence } from '@magento/peregrine/lib/util';
 
 import mergeOperations from '../../util/shallowMerge';
 
 import DEFAULT_OPERATIONS, { CUSTOM_TYPES } from './currencySwitcher.gql';
 
-const storage = new BrowserPersistence();
+// const storage = new BrowserPersistence();
 
 /**
  * The useCurrencySwitcher talon complements the CurrencySwitcher component.
@@ -32,7 +32,7 @@ export const useCurrencySwitcher = (props = {}) => {
     const operations = mergeOperations(DEFAULT_OPERATIONS, props.operations);
     const { getCurrencyQuery } = operations;
 
-    useTypePolicies(typePolicies);
+    // useTypePolicies(typePolicies);
 
     const { data: currencyData } = useQuery(getCurrencyQuery, {
         fetchPolicy: 'cache-and-network',
@@ -41,7 +41,8 @@ export const useCurrencySwitcher = (props = {}) => {
 
     const currentCurrencyCode = useMemo(() => {
         if (currencyData) {
-            return currencyData.currency.current_currency_code;
+            return globalThis.storage.getItem('store_view_currency') ||
+            currencyData.currency.default_display_currency_code //currencyData.currency.current_currency_code;
         }
     }, [currencyData]);
 
@@ -51,6 +52,7 @@ export const useCurrencySwitcher = (props = {}) => {
         }
     }, [currencyData]);
 
+
     const history = useHistory();
 
     const handleSwitchCurrency = useCallback(
@@ -58,7 +60,7 @@ export const useCurrencySwitcher = (props = {}) => {
             // Do nothing when currency code is not present in available currencies
             if (!availableCurrencies.includes(currencyCode)) return;
 
-            storage.setItem('store_view_currency', currencyCode);
+            globalThis.storage.setItem('store_view_currency', currencyCode);
 
             // Refresh the page to re-trigger the queries once currency are saved in local storage.
             history.go(0);

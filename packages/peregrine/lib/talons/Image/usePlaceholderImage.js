@@ -11,8 +11,8 @@ export const usePlaceholderImage = props => {
 
     // Render the placeholder unless we've been told not to,
     // or we've already loaded without error.
-    const hidePlaceholder =
-        !displayPlaceholder || (imageIsLoaded && !imageHasError);
+    const hidePlaceholder = 
+        globalThis.isSSR || !displayPlaceholder || (imageIsLoaded && !imageHasError);
     const shouldRenderPlaceholder = !hidePlaceholder;
 
     return {

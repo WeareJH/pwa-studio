@@ -15,7 +15,7 @@ module.exports = async function serve(dirname) {
     const stagingServerSettings = config.section('stagingServer');
     const customHttpsSettings = config.section('customHttps');
 
-    process.chdir(path.join(dirname, 'dist'));
+    process.chdir(path.join(dirname, 'dist/client'));
 
     const upwardServerOptions = Object.assign(
         // defaults

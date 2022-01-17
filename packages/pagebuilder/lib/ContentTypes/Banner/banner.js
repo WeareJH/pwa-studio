@@ -106,43 +106,45 @@ const Banner = props => {
     // Initiate jarallax for background video
     /* eslint-disable react-hooks/exhaustive-deps */
     useEffect(() => {
-        let parallaxElement;
-        let jarallax;
-        let jarallaxVideo;
-
-        if (backgroundType === 'video') {
-            const config = {
-                speed: 1,
-                imgSrc: videoFallbackSrc
-                    ? resourceUrl(videoFallbackSrc, {
-                          type: 'image-wysiwyg',
-                          quality: 85
-                      })
-                    : null,
-                elementInViewport: viewportElement.current,
-                videoSrc,
-                videoLoop,
-                videoPlayOnlyVisible,
-                videoLazyLoading
-            };
-            parallaxElement = backgroundElement.current;
-            ({ jarallax, jarallaxVideo } = require('jarallax'));
-            jarallaxVideo();
-            jarallax(parallaxElement, config);
-            parallaxElement.jarallax.video &&
-                parallaxElement.jarallax.video.on('started', () => {
-                    const self = parallaxElement.jarallax;
-
-                    // show video
-                    if (self.$video) {
-                        self.$video.style.visibility = 'visible';
-                    }
-                });
-            getParallax(parallaxElement, config);
+        if(!globalThis.isSSR) {
+            let parallaxElement;
+            let jarallax;
+            let jarallaxVideo;
+    
+            if (backgroundType === 'video') {
+                const config = {
+                    speed: 1,
+                    imgSrc: videoFallbackSrc
+                        ? resourceUrl(videoFallbackSrc, {
+                              type: 'image-wysiwyg',
+                              quality: 85
+                          })
+                        : null,
+                    elementInViewport: viewportElement.current,
+                    videoSrc,
+                    videoLoop,
+                    videoPlayOnlyVisible,
+                    videoLazyLoading
+                };
+                parallaxElement = backgroundElement.current;
+                ({ jarallax, jarallaxVideo } = require('jarallax'));
+                jarallaxVideo();
+                jarallax(parallaxElement, config);
+                parallaxElement.jarallax.video &&
+                    parallaxElement.jarallax.video.on('started', () => {
+                        const self = parallaxElement.jarallax;
+    
+                        // show video
+                        if (self.$video) {
+                            self.$video.style.visibility = 'visible';
+                        }
+                    });
+                getParallax(parallaxElement, config);
+            }
         }
 
         return () => {
-            if (parallaxElement && backgroundType === 'video') {
+            if (!globalThis.isSSR && parallaxElement && backgroundType === 'video') {
                 jarallax(parallaxElement, 'destroy');
             }
         };

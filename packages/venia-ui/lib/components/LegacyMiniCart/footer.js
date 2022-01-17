@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { bool, number, object, shape, string } from 'prop-types';
 
 import { useStyle } from '../../classify';
@@ -7,6 +7,7 @@ import CheckoutButton from '../Checkout/checkoutButton';
 
 import defaultClasses from './footer.module.css';
 import TotalsSummary from './totalsSummary';
+import Suspense from '../SuspenseFallback'
 
 const Footer = props => {
     const {

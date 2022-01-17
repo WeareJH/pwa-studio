@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
-import { BrowserPersistence } from '@magento/peregrine/lib/util';
+// import { BrowserPersistence } from '@magento/peregrine/lib/util';
 
-const storage = new BrowserPersistence();
+// const storage = new BrowserPersistence();
 
 /**
  * Custom type policies necessary for the currency query.
@@ -16,7 +16,7 @@ export const CUSTOM_TYPES = {
             current_currency_code: {
                 read(_, { readField }) {
                     return (
-                        storage.getItem('store_view_currency') ||
+                        globalThis.storage.getItem('store_view_currency') ||
                         readField('default_display_currency_code')
                     );
                 }

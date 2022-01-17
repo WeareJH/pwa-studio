@@ -14,7 +14,7 @@ export const UNCONSTRAINED_SIZE_KEY = 'default';
  */
 export const useImage = props => {
     const { onError, onLoad, width, widths, height, ratio } = props;
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(globalThis.isSSR ? true : false);
     const [hasError, setHasError] = useState(false);
 
     const handleImageLoad = useCallback(() => {

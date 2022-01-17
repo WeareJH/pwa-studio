@@ -5,7 +5,7 @@ import { BrowserPersistence } from '@magento/peregrine/lib/util';
 const CACHE_ID_HEADER = 'x-magento-cache-id';
 // The key in local storage where we save the cache id
 const LOCAL_STORAGE_KEY = 'magento_cache_id';
-const storage = new BrowserPersistence();
+// const storage = new BrowserPersistence();
 
 /**
  * The Magento GraphQL Cache Link class is an ApolloLink that is responsible for
@@ -14,13 +14,13 @@ const storage = new BrowserPersistence();
 export default class MagentoGQLCacheLink extends ApolloLink {
     // The links get reinstantiated on refresh.
     // If we have an existing cache id value from a previous browsing session, use it.
-    #cacheId = storage.getItem(LOCAL_STORAGE_KEY) || null;
+    #cacheId = globalThis.storage.getItem(LOCAL_STORAGE_KEY) || null;
 
     // Any time the cache id needs to be set, update both our internal variable and
     // the value in local storage.
     setCacheId(value) {
         this.#cacheId = value;
-        storage.setItem(LOCAL_STORAGE_KEY, value);
+        globalThis.storage.setItem(LOCAL_STORAGE_KEY, value);
     }
 
     request(operation, forward) {

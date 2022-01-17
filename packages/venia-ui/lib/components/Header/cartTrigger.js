@@ -1,4 +1,4 @@
-import React, { Fragment, Suspense } from 'react';
+import React, { Fragment } from 'react';
 import { shape, string } from 'prop-types';
 import { ShoppingBag as ShoppingCartIcon } from 'react-feather';
 import { useIntl } from 'react-intl';
@@ -7,6 +7,7 @@ import { useCartTrigger } from '@magento/peregrine/lib/talons/Header/useCartTrig
 
 import { useStyle } from '../../classify';
 import Icon from '../Icon';
+import Suspense from '../SuspenseFallback';
 import defaultClasses from './cartTrigger.module.css';
 import { GET_ITEM_COUNT_QUERY } from './cartTrigger.gql';
 

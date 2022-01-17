@@ -23,6 +23,10 @@ const createContentTypeObject = (type, node) => {
  * @returns {Object}
  */
 const walk = (rootEl, contentTypeStructureObj) => {
+    if(globalThis.isSSR) {
+        return walkNode(rootEl, contentTypeStructureObj);
+    }
+
     const tree = document.createTreeWalker(
         rootEl,
         NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT
@@ -74,6 +78,54 @@ const walk = (rootEl, contentTypeStructureObj) => {
     return contentTypeStructureObj;
 };
 
+const walkNode = (rootEl, contentTypeStructureObj) => {
+    const walkParentNode = (currentNode) => {
+        if(currentNode.hasChildNodes()){
+            for(const childNode of currentNode.childNodes) {
+                walkChildNode(childNode);
+            }
+        }
+    }
+
+    const walkChildNode = (currentNode) => {
+        const contentType = currentNode.nodeType === 1 ? currentNode.getAttribute('data-content-type') : false;
+        if(!contentType) {
+            walkParentNode(currentNode);
+        }
+        else {
+            const props = createContentTypeObject(contentType, currentNode);
+            const contentTypeConfig = getContentTypeConfig(contentType);
+
+            if (
+                contentTypeConfig &&
+                typeof contentTypeConfig.configAggregator === 'function'
+            ) {
+                try {
+                    Object.assign(
+                        props,
+                        contentTypeConfig.configAggregator(currentNode, props)
+                    );
+                } catch (e) {
+                    console.error(
+                        `Failed to aggregate config for content type ${contentType}.`,
+                        e
+                    );
+                }
+            } else {
+                console.warn(
+                    `Page Builder ${contentType} content type is not supported, this content will not be rendered.`
+                );
+            }
+    
+            contentTypeStructureObj.children.push(props);
+            walkNode(currentNode, props);
+        }
+    }
+
+    walkParentNode(rootEl);
+    return contentTypeStructureObj;
+}
+
 const pbStyleAttribute = 'data-pb-style';
 const bodyId = 'html-body';
 
@@ -90,7 +142,8 @@ const convertToInlineStyles = document => {
             const cssRules = styleBlock.sheet.cssRules;
 
             Array.from(cssRules).forEach(rule => {
-                if (rule instanceof CSSStyleRule) {
+                // if (rule instanceof CSSStyleRule) {
+                if (rule.constructor?.name === 'CSSStyleRule') {
                     const selectors = rule.selectorText
                         .split(',')
                         .map(selector => selector.trim());
@@ -131,7 +184,6 @@ const parseStorageHtml = htmlStr => {
     const container = new DOMParser().parseFromString(htmlStr, 'text/html');
 
     const stageContentType = createContentTypeObject('root-container');
-
     container.body.id = bodyId;
     convertToInlineStyles(container);
 

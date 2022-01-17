@@ -29,11 +29,17 @@ export const useCategoryContent = props => {
 
     const placeholderItems = Array.from({ length: pageSize }).fill(null);
 
-    const [getFilters, { data: filterData }] = useLazyQuery(
+    const { data: filterData } = useQuery(
         getProductFiltersByCategoryQuery,
         {
             fetchPolicy: 'cache-and-network',
-            nextFetchPolicy: 'cache-first'
+            nextFetchPolicy: 'cache-first',
+            variables: {
+                categoryIdFilter: {
+                    eq: categoryId
+                }
+            },
+            skip: !categoryId,
         }
     );
 
@@ -46,17 +52,17 @@ export const useCategoryContent = props => {
         }
     });
 
-    useEffect(() => {
-        if (categoryId) {
-            getFilters({
-                variables: {
-                    categoryIdFilter: {
-                        eq: categoryId
-                    }
-                }
-            });
-        }
-    }, [categoryId, getFilters]);
+    // useEffect(() => {
+    //     if (categoryId) {
+    //         getFilters({
+    //             variables: {
+    //                 categoryIdFilter: {
+    //                     eq: categoryId
+    //                 }
+    //             }
+    //         });
+    //     }
+    // }, [categoryId, getFilters]);
 
     const filters = filterData ? filterData.products.aggregations : null;
     const items = data ? data.products.items : placeholderItems;

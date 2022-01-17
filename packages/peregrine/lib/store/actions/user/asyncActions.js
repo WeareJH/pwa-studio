@@ -1,10 +1,8 @@
-import BrowserPersistence from '../../../util/simplePersistence';
+// import BrowserPersistence from '../../../util/simplePersistence';
 import { removeCart } from '../cart';
 import { clearCheckoutDataFromStorage } from '../checkout';
 
 import actions from './actions';
-
-const storage = new BrowserPersistence();
 
 export const signOut = (payload = {}) =>
     async function thunk(dispatch, getState, { apolloClient }) {
@@ -69,7 +67,7 @@ export const setToken = token =>
 
         // Store token in local storage.
         // TODO: Get correct token expire time from API
-        storage.setItem('signin_token', token, 3600);
+        globalThis.storage.setItem('signin_token', token, 3600);
 
         // Persist in store
         dispatch(actions.setToken(token));
@@ -80,7 +78,7 @@ export const clearToken = () =>
         const [dispatch] = args;
 
         // Clear token from local storage
-        storage.removeItem('signin_token');
+        globalThis.storage.removeItem('signin_token');
 
         // Remove from store
         dispatch(actions.clearToken());

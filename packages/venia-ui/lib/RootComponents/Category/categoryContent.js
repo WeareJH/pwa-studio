@@ -1,4 +1,4 @@
-import React, { Fragment, Suspense, useMemo, useRef } from 'react';
+import React, { Fragment, useMemo, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { array, number, shape, string } from 'prop-types';
 
@@ -17,14 +17,16 @@ import Pagination from '../../components/Pagination';
 import ProductSort, { ProductSortShimmer } from '../../components/ProductSort';
 import RichContent from '../../components/RichContent';
 import Shimmer from '../../components/Shimmer';
+import Suspense from '../../components/Suspense';
 import SortedByContainer, {
     SortedByContainerShimmer
 } from '../../components/SortedByContainer';
 import defaultClasses from './category.module.css';
 import NoProductsFound from './NoProductsFound';
+import loadable from '@loadable/component'
 
-const FilterModal = React.lazy(() => import('../../components/FilterModal'));
-const FilterSidebar = React.lazy(() =>
+const FilterModal = loadable(() => import('../../components/FilterModal'))
+const FilterSidebar = loadable(() =>
     import('../../components/FilterSidebar')
 );
 
@@ -57,7 +59,8 @@ const CategoryContent = props => {
     const sidebarRef = useRef(null);
     const classes = useStyle(defaultClasses, props.classes);
     const shouldRenderSidebarContent = useIsInViewport({
-        elementRef: sidebarRef
+        elementRef: sidebarRef,
+        ignoreSSR: true,
     });
 
     const shouldShowFilterButtons = filters && filters.length;

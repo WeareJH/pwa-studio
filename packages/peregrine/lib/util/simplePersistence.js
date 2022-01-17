@@ -1,3 +1,5 @@
+import Cookies from 'universal-cookie'
+const SEPERATOR = '__';
 /**
  * Persistence layer with expiration based on localStorage.
  */
@@ -10,13 +12,32 @@ const storageMock = {
     clear() {}
 };
 
+class CookieStorageInstance {
+    constructor() {
+        this.cookies = globalThis.isSSR ? new Cookies(globalThis.req?.headers?.cookie, globalThis.res?.headers?.cookie) : new Cookies();
+    }
+    getItem(key) {
+        return this.cookies.get(key, { path: '/', doNotParse: true });
+    }
+    setItem(name, value) {
+        return this.cookies.set(name, value, { path: '/' });
+    }
+    removeItem(name) {
+        return this.cookies.remove(name, { path: '/'});
+    }
+    getAll() {
+        return this.cookies.getAll({ doNotParse: true });
+    }
+    
+}
+
 class NamespacedLocalStorage {
     constructor(localStorage, key) {
         this.localStorage = localStorage;
         this.key = key;
     }
     _makeKey(key) {
-        return `${this.key}__${key}`;
+        return `${this.key}${SEPERATOR}${key}`;
     }
     getItem(name) {
         return this.localStorage.getItem(this._makeKey(name));
@@ -27,15 +48,19 @@ class NamespacedLocalStorage {
     removeItem(name) {
         return this.localStorage.removeItem(this._makeKey(name));
     }
+    getAll() {
+        return this.localStorage.getAll ? this.localStorage.getAll() : {};
+    }
 }
 
 export default class BrowserPersistence {
-    static KEY = 'M2_VENIA_BROWSER_PERSISTENCE';
+    static KEY = PERSISTENCE_KEY;
     /* istanbul ignore next: test injects localstorage mock */
-    constructor(localStorage = globalThis.localStorage || storageMock) {
+    constructor(localStorage = USE_COOKIES ? new CookieStorageInstance : (globalThis.localStorage || storageMock)) {
+        this.storageKey = this.constructor.KEY || BrowserPersistence.KEY;
         this.storage = new NamespacedLocalStorage(
             localStorage,
-            this.constructor.KEY || BrowserPersistence.KEY
+            this.storageKey
         );
     }
     getRawItem(name) {
@@ -46,9 +71,14 @@ export default class BrowserPersistence {
         if (!item) {
             return undefined;
         }
-        const { value } = JSON.parse(item);
-
-        return JSON.parse(value);
+        try {
+            const { value } = JSON.parse(item);
+    
+            return JSON.parse(value);
+        }
+        catch(e) {
+            return undefined;
+        }
     }
     setItem(name, value, ttl) {
         const timeStored = Date.now();
@@ -63,5 +93,22 @@ export default class BrowserPersistence {
     }
     removeItem(name) {
         this.storage.removeItem(name);
+    }
+    getAll() {
+        try {
+            const storageData = this.storage.getAll();
+            const filteredResults = Object.keys(storageData).sort().reduce((obj, key) => {
+                if(key.startsWith(this.storageKey+SEPERATOR)) {
+                    obj[key] = JSON.parse(storageData[key]).value;
+                }
+                return obj;
+            }, {})
+
+            return filteredResults;
+        }
+        catch(e) {
+            console.log('err?', e);
+            return []
+        }
     }
 }

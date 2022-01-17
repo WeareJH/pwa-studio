@@ -1,4 +1,4 @@
-import React, { Fragment, Suspense } from 'react';
+import React, { Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { func, string, shape } from 'prop-types';
 import { Edit2 as EditIcon } from 'react-feather';
@@ -11,6 +11,7 @@ import AddressForm from './AddressForm';
 import Card from './card';
 import defaultClasses from './shippingInformation.module.css';
 import LinkButton from '../../LinkButton';
+import Suspense from '../../SuspenseFallback';
 
 const EditModal = React.lazy(() => import('./editModal'));
 

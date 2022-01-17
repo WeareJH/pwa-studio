@@ -1,10 +1,11 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { useIntl } from 'react-intl';
 import { func } from 'prop-types';
 
 import LoadingIndicator from '@magento/venia-ui/lib/components/LoadingIndicator';
 import { useStyle } from '../../../classify';
 import { Accordion, Section } from '../../Accordion';
+import Suspense from '../../SuspenseFallback';
 import GiftCardSection from './giftCardSection';
 
 import defaultClasses from './priceAdjustments.module.css';

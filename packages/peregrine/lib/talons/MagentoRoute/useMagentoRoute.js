@@ -8,6 +8,8 @@ import { useAppContext } from '../../context/app';
 
 import { getRootComponent, isRedirect } from './helpers';
 import DEFAULT_OPERATIONS from './magentoRoute.gql';
+import readJson from '@magento/peregrine/lib/util/readJson';
+// import { createDispatchHook } from 'react-redux';
 
 const getInlinedPageData = () => {
     return globalThis.INLINED_PAGE_TYPE && globalThis.INLINED_PAGE_TYPE.type
@@ -49,13 +51,17 @@ export const useMagentoRoute = (props = {}) => {
     const { route } = data || {};
 
     useEffect(() => {
-        if (initialized.current || !getInlinedPageData()) {
+        if (globalThis.initialRouteData?.pathname !== pathname && (initialized.current || !getInlinedPageData())) {
+            console.log('path', globalThis.initialRouteData?.pathname, '-', pathname);
             runQuery({
                 fetchPolicy: 'cache-and-network',
                 nextFetchPolicy: 'cache-first',
                 variables: { url: pathname }
             });
             fetchedPathname.current = pathname;
+        }
+        else if(globalThis.initialRouteData?.pathname === pathname) {
+            console.log('Prevent re-fetching active page.', globalThis.initialRouteData?.pathname);
         }
     }, [initialized, pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -124,6 +130,8 @@ export const useMagentoRoute = (props = {}) => {
         // LOADING with full page shimmer
         showPageLoader = true;
         routeData = { isLoading: true, shimmer: nextRootComponent };
+    } else if(!initialized.current && globalThis.initialRoute) {
+        routeData = globalThis.globalThis.initialRoute
     } else {
         // LOADING
         const isInitialLoad = !isInitialized;
@@ -175,3 +183,65 @@ export const useMagentoRoute = (props = {}) => {
 
     return routeData;
 };
+
+export const getInitialMagentoRoute = (pathname, client) => {
+	return new Promise ((resolve, reject) => {
+		const { resolveUrlQuery } = DEFAULT_OPERATIONS;
+
+        try {
+            client.query({
+                query: resolveUrlQuery,
+                variables: { url: pathname }
+                // fetchPolicy: 'cache-and-network',
+                // nextFetchPolicy: 'cache-first',
+            }).then(({data}) => {
+                const { type, ...routeData } = data.route || {};
+                try {
+                    getRootComponent(type).then(rootComponent => {
+                        const initialRoute = {
+                            component: rootComponent,
+                            ...getComponentData(routeData),
+                            type,
+                        };
+                        globalThis.initialRoute = initialRoute;
+                        globalThis.initialRootComponents = new Map([[
+                            pathname, initialRoute
+                        ]]);
+                        resolve(data.route || {})
+                    }).catch(error => {
+                        resolve(error);
+                    })
+                } catch (error) {
+                    resolve(error);
+                }
+            }).catch((error) => {
+                console.warn('Initial Magento Route Error', error);
+                resolve(false);
+            })
+        }
+        catch(error) {
+            console.warn('Initial Magento Route Error', error);
+            resolve(false);
+        }
+	});
+}
+
+export const hydrateInitialMagentoRoute = () => {
+    return new Promise((resolve, reject) => {
+        globalThis.initialRouteData = readJson('initial-route-data');
+        const {type, pathname, ...routeData} = globalThis.initialRouteData;
+
+        getRootComponent(type).then((rootComponent) => {
+            const initialRoute = {
+                component: rootComponent,
+                ...getComponentData(routeData),
+                type,
+            };
+
+            globalThis.initialRootComponents = new Map([[
+				pathname, initialRoute
+			]]);
+            resolve(initialRoute)
+        });
+    });
+}

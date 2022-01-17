@@ -1,6 +1,5 @@
 import React from 'react';
 import { shape, string } from 'prop-types';
-
 import { useCurrencySwitcher } from '@magento/peregrine/lib/talons/Header/useCurrencySwitcher';
 
 import { useStyle } from '../../classify';

@@ -1,8 +1,9 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { useIntl } from 'react-intl';
 
 import LoadingIndicator from '@magento/venia-ui/lib/components/LoadingIndicator';
 import { Section } from '../../Accordion';
+import Suspense from '../../SuspenseFallback';
 
 const GiftCards = React.lazy(() => import('../GiftCards'));
 

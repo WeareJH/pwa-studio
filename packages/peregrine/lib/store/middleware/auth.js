@@ -1,9 +1,9 @@
-import BrowserPersistence from '../../util/simplePersistence';
+// import BrowserPersistence from '../../util/simplePersistence';
 import userActions, { signOut } from '../actions/user';
 
 const timeouts = new Map();
 const intervals = new Map();
-const storage = new BrowserPersistence();
+// const storage = new BrowserPersistence();
 const SET_TOKEN = userActions.setToken.toString();
 const CLEAR_TOKEN = userActions.clearToken.toString();
 const GET_DETAILS = userActions.getDetails.request.toString();
@@ -23,7 +23,7 @@ const scheduleSignOut = store => next => action => {
     if (isSigningIn(action.type)) {
         // `BrowserPersistence.getItem()` only returns the value
         // but we need the full item with timestamp and ttl
-        const item = storage.getRawItem('signin_token');
+        const item = globalThis.storage.getRawItem('signin_token');
 
         // exit if there's nothing in storage
         if (!item) return next(action);

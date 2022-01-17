@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { BrowserPersistence } from '@magento/peregrine/lib/util';
+// import { BrowserPersistence } from '@magento/peregrine/lib/util';
 
-const storage = new BrowserPersistence();
+// const storage = new BrowserPersistence();
 
 /**
  * This component checks for use of a store code in the url that is not the
@@ -41,12 +41,12 @@ const StoreCodeRoute = () => {
     // the storage value and refresh so that we start using the new code.
     useEffect(() => {
         if (storeCodeInUrl && storeCodeInUrl !== currentStoreCode) {
-            storage.setItem('store_view_code', storeCodeInUrl);
-            storage.setItem(
+            globalThis.storage.setItem('store_view_code', storeCodeInUrl);
+            globalThis.storage.setItem(
                 'store_view_currency',
                 storeCurrencies[storeCodeInUrl]
             );
-            storage.setItem(
+            globalThis.storage.setItem(
                 'store_view_secure_base_media_url',
                 storeSecureBaseMediaUrl[storeCodeInUrl]
             );
