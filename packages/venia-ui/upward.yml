@@ -52,7 +52,7 @@ staticFromRoot:
                     filename: request.url.pathname
                 template:
                     resolver: inline
-                    inline: './venia-static/{{ filename }}'
+                    inline: './static/{{ filename }}'
 
 contentTypeFromExtension:
     when:

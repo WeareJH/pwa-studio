@@ -22,7 +22,7 @@ const Adapter = props => {
         return null;
     }
 
-    const children = props.children || <App />;
+    const children = props.children ? props.children : <App />;
     const storeCodeRouteHandler = urlHasStoreCode ? <StoreCodeRoute /> : null;
 
     return (
